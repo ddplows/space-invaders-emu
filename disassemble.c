@@ -301,7 +301,7 @@ int Emulate8080p(State8080* state){
 			state->cc.cy = (answer > 0xff);
 			state->cc.p = Parity(answer & 0xff);
 			state->a = answer & 0xff;
-		break;
+			break;
 		case 0x88: //adc b
 			uint16_t answer = (uint16_t)state->a + (uint16_t)state->b + state->;
 
@@ -314,14 +314,78 @@ int Emulate8080p(State8080* state){
 			state->cc.cy = (answer > 0xff);
 			state->cc.p = Parity(answer & 0xff);
 			state->a = answer & 0xff;
-		break;
-		case 0x89: UnimplementedInstruction(state); break;
-		case 0x8a: UnimplementedInstruction(state); break;
-		case 0x8b: UnimplementedInstruction(state); break;
-		case 0x8c: UnimplementedInstruction(state); break;
-		case 0x8d: UnimplementedInstruction(state); break;
-		case 0x8e: UnimplementedInstruction(state); break;
-		case 0x8f: UnimplementedInstruction(state); break;	
+			break;
+		case 0x89: //adc c
+			uint16_t answer = (uint16_t)state->a + (uint16_t)state->c + state->;
+
+			//check zero flag
+			state->cc.z = ((answer & 0xff) == 0);
+
+			//check sign flag
+			state->cc.s = ((answer & 0x80) != 0);
+			//check carry flag
+			state->cc.cy = (answer > 0xff);
+			state->cc.p = Parity(answer & 0xff);
+			state->a = answer & 0xff;			
+			break;
+		case 0x8a: //adc d
+			uint16_t answer = (uint16_t)state->a + (uint16_t)state->d + state->;
+
+			//check zero flag
+			state->cc.z = ((answer & 0xff) == 0);
+
+			//check sign flag
+			state->cc.s = ((answer & 0x80) != 0);
+			//check carry flag
+			state->cc.cy = (answer > 0xff);
+			state->cc.p = Parity(answer & 0xff);
+			state->a = answer & 0xff;
+			break;
+		case 0x8b: //adc e
+			uint16_t answer = (uint16_t)state->a + (uint16_t)state->e + state->;
+
+			//check zero flag
+			state->cc.z = ((answer & 0xff) == 0);
+
+			//check sign flag
+			state->cc.s = ((answer & 0x80) != 0);
+			//check carry flag
+			state->cc.cy = (answer > 0xff);
+			state->cc.p = Parity(answer & 0xff);
+			state->a = answer & 0xff;
+			break;
+		case 0x8c: //adc h
+			uint16_t answer = (uint16_t)state->a + (uint16_t)state->h + state->;
+
+			//check zero flag
+			state->cc.z = ((answer & 0xff) == 0);
+
+			//check sign flag
+			state->cc.s = ((answer & 0x80) != 0);
+			//check carry flag
+			state->cc.cy = (answer > 0xff);
+			state->cc.p = Parity(answer & 0xff);
+			state->a = answer & 0xff;
+			break;
+		case 0x8d: //adc l
+			uint16_t answer = (uint16_t)state->a + (uint16_t)state->l + state->;
+
+			//check zero flag
+			state->cc.z = ((answer & 0xff) == 0);
+
+			//check sign flag
+			state->cc.s = ((answer & 0x80) != 0);
+			//check carry flag
+			state->cc.cy = (answer > 0xff);
+			state->cc.p = Parity(answer & 0xff);
+			state->a = answer & 0xff;
+			break;
+		case 0x8e: 
+			UnimplementedInstruction(state); 
+			break;
+		case 0x8f: 
+			UnimplementedInstruction(state); 
+			break;	
 		case 0x90: UnimplementedInstruction(state); break;
 		case 0x91: UnimplementedInstruction(state); break;
 		case 0x92: UnimplementedInstruction(state); break;
