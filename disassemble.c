@@ -32,6 +32,84 @@ void UnimplementedInstruction(State8080* state){
 	exit(1);
 }
 
+int 8080add(State8080* state){
+    int addParam = 0;
+    switch(*opcode & 0x0F){
+        case 0x00:
+            
+            break;
+        case 0x01:
+            
+            break;
+        case 0x02:
+            
+            break;
+        case 0x03:
+            
+            break;
+        case 0x04:
+            
+            break;
+        case 0x05:
+            
+            break;
+        case 0x06:
+            
+            break;
+        case 0x07:
+            
+            break;
+        case 0x08:
+            
+            break;
+        case 0x09:
+            
+            break;
+    
+    }
+    uint16_t answer = (uint16_t)state->a + (uint16_t)state->b;
+
+	//check zero flag
+	if((answer & 0xff) == 0)
+		state->cc.z = 1;
+	else
+		state->cc.z = 0;
+
+	//check sign flag
+	state->cc.s = ((answer & 0x80) != 0);
+	//check carry flag
+	state->cc.cy = (answer > 0xff);
+	state->cc.p = Parity(answer & 0xff);
+	state->a = answer & 0xff;
+	}
+
+int Emulate8080pr(State8080* state){
+    uint8_t* opcode = &state->memory[state->pc];
+    switch(*opcode & 0xF0){ // add instructions
+        case 0x80: //add instruction
+            
+            uint16_t answer = (uint16_t)state->a + (uint16_t)state->b;
+
+			//check zero flag
+			if((answer & 0xff) == 0)
+				state->cc.z = 1;
+			else
+				state->cc.z = 0;
+
+			//check sign flag
+			state->cc.s = ((answer & 0x80) != 0);
+			//check carry flag
+			state->cc.cy = (answer > 0xff);
+			state->cc.p = Parity(answer & 0xff);
+			state->a = answer & 0xff;
+			break;
+
+            break;
+    }
+}
+
+
+
 int Emulate8080p(State8080* state){
 	uint8_t* opcode = &state->memory[state->pc];
 	switch(*opcode){
