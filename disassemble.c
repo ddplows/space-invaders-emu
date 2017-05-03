@@ -119,6 +119,76 @@ int Sub8080(State8080* state)
 	return 0;
 }
 
+int Move8080(State8080* state){
+    return 0;
+}
+
+
+int FilterMove(State8080* state){
+    uint8_t* opcode = &state->memory[state->pc];
+    uint8_t* to, from;
+    uint8_t toCode=0, fromCode=0;
+    uint16_t offset=0;
+    //destination switch
+    switch(*opcode/0x08){
+        case 0x08:
+            to = &state->b;
+            break;
+        case 0x09:
+            to = &state->c;
+            break;
+        case 0x0A:
+            to = &state->d;
+            break;
+        case 0x0B:
+            to = &state->e;
+            break;
+        case 0x0C:
+            to = &state->h;
+            break;
+        case 0x0D:
+            to = &state->l;
+            break;
+        case 0x0E:
+            offset = (state->h<<8) | (state->l);
+            to = &state->memory[offset];
+            break;
+        case 0x0F:
+            to = &state->a;
+            break;
+
+    }
+    //source switch
+    switch(*opcode%0x08){
+        case 0x00:
+            to = &state->b;
+            break;
+        case 0x01:
+            to = &state->c;
+            break;
+        case 0x02:
+            to = &state->d;
+            break;
+        case 0x03:
+            to = &state->e;
+            break;
+        case 0x04:
+            to = &state->h;
+            break;
+        case 0x05:
+            to = &state->l;
+            break;
+        case 0x06:
+            offset = (state->h<<8) | (state->l);
+            to = &state->memory[offset];
+            break;
+        case 0x07:
+            to = &state->a;
+            break;
+
+    }
+    return 0; 
+}
 
 int Add8080(State8080* state)
 {
@@ -197,10 +267,10 @@ int Add8080(State8080* state)
 
 int And8080(State8080* state)
 {
-	uint16_t andParam = 0, offset = 0;
+	uint16_t andParam = 0, offset = 0, answer=0;
 	uint8_t* opcode = &state->memory[state->pc];
-
-	switch(*opcode & 0x0F) {
+    
+	switch((*opcode & 0x0F) % 0x08) {
 	case 0x00:
 		andParam = (uint16_t)state->b;
 		break;
@@ -226,40 +296,15 @@ int And8080(State8080* state)
 	case 0x07:
 		andParam = (uint16_t)state->a;
 		break;
-	case 0x08:
-		andParam = (uint16_t)state->b;
-		break;
-	case 0x09:
-		andParam = (uint16_t)state->c;
-		break;
-	case 0x0a:
-		andParam = (uint16_t)state->d;
-		break;
-	case 0x0b:
-		andParam = (uint16_t)state->e;
-		break;
-	case 0x0c:
-		andParam = (uint16_t)state->h;
-		break;
-	case 0x0d:
-		andParam = (uint16_t)state->l;
-		break;
-	case 0x0e:
-		offset = (state->h<<8) | (state->l);
-		andParam = state->memory[offset];
-		break;
-	case 0x0f:
-		andParam = (uint16_t)state->a;
-		break;
-	}
+    }
     
     if(*opcode & 0xF0 < 0x08){
     //and
-        uint16_t answer = (uint16_t)state->a & addParam;
+        answer = (uint16_t)state->a & andParam;
     }
     else{
     //XOR
-        uint16_t answer = (uint16_t)state->a ^ addParam;
+        answer = (uint16_t)state->a ^ andParam;
     }
 
 	//check zero flag
