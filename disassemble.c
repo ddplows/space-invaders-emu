@@ -120,11 +120,6 @@ int Sub8080(State8080* state)
 }
 
 int Move8080(State8080* state){
-    return 0;
-}
-
-
-int FilterMove(State8080* state){
     uint8_t* opcode = &state->memory[state->pc];
     uint8_t* to, from;
     uint8_t toCode=0, fromCode=0;
@@ -161,33 +156,86 @@ int FilterMove(State8080* state){
     //source switch
     switch(*opcode%0x08){
         case 0x00:
-            to = &state->b;
+            from = &state->b;
             break;
         case 0x01:
-            to = &state->c;
+            from = &state->c;
             break;
         case 0x02:
-            to = &state->d;
+            from = &state->d;
             break;
         case 0x03:
-            to = &state->e;
+            from = &state->e;
             break;
         case 0x04:
-            to = &state->h;
+            from = &state->h;
             break;
         case 0x05:
-            to = &state->l;
+            from = &state->l;
             break;
         case 0x06:
-            offset = (state->h<<8) | (state->l);
-            to = &state->memory[offset];
+            offset = (uint16_t)((state->h<<8) | (state->l));
+            from = &state->memory[offset];
             break;
         case 0x07:
-            to = &state->a;
+            from = &state->a;
             break;
-
     }
+
+    *to = *from;
     return 0; 
+}
+
+int Or8080(State8080* state){
+	uint8_t* opcode = &state->memory[state->pc];
+	uint16_t orParam = 0, offset = 0;
+	switch(*opcode & 0x0F){
+		case 0x00:
+			orParam = (uint16_t)state->b;
+			break;
+		case 0x01:
+			orParam = (uint16_t)state->c;
+			break;
+		case 0x02:
+			orParam = (uint16_t)state->d;
+			break;
+		case 0x03:
+			orParam = (uint16_t)state->e;
+			break;
+		case 0x04:
+			orParam = (uint16_t)state->h;
+			break;
+		case 0x05:
+			orParam = (uint16_t)state->l;
+			break;
+		case 0x06:
+			offset = (uint16_t)((state->h << 8) | (state->l));
+			orParam = &state->memory[offset];
+			break;
+		case 0x07:
+			orParam = (uint16_t)state->a;
+			break;
+	}
+	uint16_t answer = (uint16_t)state->a + orParam;
+
+	//check zero flag
+	if((answer & 0xff) == 0)
+		state->cc.z = 1;
+	else
+		state->cc.z = 0;
+
+	//check sign flag
+	state->cc.s = ((answer & 0x80) != 0);
+	//check carry flag
+	state->cc.cy = (answer > 0xff);
+	state->cc.p = parity(answer&0xff, 8);
+	state->a = answer & 0xff;
+
+	return 0;
+}
+
+int Compare8080(State8080* state){
+
 }
 
 int Add8080(State8080* state)
