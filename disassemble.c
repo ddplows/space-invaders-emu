@@ -422,11 +422,26 @@ int Emulate8080p(State8080* state)
 {
 	uint8_t* opcode = &state->memory[state->pc];
 	uint16_t answer, offset;
-	if(*opcode & 0x0F == 0x80) {
+	uint8_t fOpcode = *opcode & 0x0F;
+    uint8_t sOpcode = *opcode & 0xF0;
+    if(fOpcode > 0x30 && fOpcode < 0x80){
+        Move8080(state);
+    }
+    else if(fOpcode == 0x80) {
 		Add8080(state);
-	} else if(*opcode & 0x0F == 0x90) {
+	} else if(fOpcode == 0x90) {
 		Sub8080(state);
-	} else {
+	} else if(fOpcode == 0xA0){
+        And8080(state);
+    } else if(fOpcode == 0xB0){
+        if(sOpcode < 0x08){
+            Or8080(state);
+        }
+        else{
+            Compare8080(state);
+        }
+    }
+    else{
 		switch(*opcode) {
 		case 0x00:
 			break; //nop
