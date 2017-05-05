@@ -119,102 +119,104 @@ int Sub8080(State8080* state)
 	return 0;
 }
 
-int Move8080(State8080* state){
-    uint8_t* opcode = &state->memory[state->pc];
-    uint8_t* to, from;
-    uint8_t toCode=0, fromCode=0;
-    uint16_t offset=0;
-    //destination switch
-    switch(*opcode/0x08){
-        case 0x08:
-            to = &state->b;
-            break;
-        case 0x09:
-            to = &state->c;
-            break;
-        case 0x0A:
-            to = &state->d;
-            break;
-        case 0x0B:
-            to = &state->e;
-            break;
-        case 0x0C:
-            to = &state->h;
-            break;
-        case 0x0D:
-            to = &state->l;
-            break;
-        case 0x0E:
-            offset = (state->h<<8) | (state->l);
-            to = &state->memory[offset];
-            break;
-        case 0x0F:
-            to = &state->a;
-            break;
+int Move8080(State8080* state)
+{
+	uint8_t* opcode = &state->memory[state->pc];
+	uint8_t* to, from;
+	uint8_t toCode=0, fromCode=0;
+	uint16_t offset=0;
+	//destination switch
+	switch(*opcode/0x08) {
+	case 0x08:
+		to = &state->b;
+		break;
+	case 0x09:
+		to = &state->c;
+		break;
+	case 0x0A:
+		to = &state->d;
+		break;
+	case 0x0B:
+		to = &state->e;
+		break;
+	case 0x0C:
+		to = &state->h;
+		break;
+	case 0x0D:
+		to = &state->l;
+		break;
+	case 0x0E:
+		offset = (state->h<<8) | (state->l);
+		to = &state->memory[offset];
+		break;
+	case 0x0F:
+		to = &state->a;
+		break;
 
-    }
-    //source switch
-    switch(*opcode%0x08){
-        case 0x00:
-            from = &state->b;
-            break;
-        case 0x01:
-            from = &state->c;
-            break;
-        case 0x02:
-            from = &state->d;
-            break;
-        case 0x03:
-            from = &state->e;
-            break;
-        case 0x04:
-            from = &state->h;
-            break;
-        case 0x05:
-            from = &state->l;
-            break;
-        case 0x06:
-            offset = (uint16_t)((state->h<<8) | (state->l));
-            from = &state->memory[offset];
-            break;
-        case 0x07:
-            from = &state->a;
-            break;
-    }
+	}
+	//source switch
+	switch(*opcode%0x08) {
+	case 0x00:
+		from = &state->b;
+		break;
+	case 0x01:
+		from = &state->c;
+		break;
+	case 0x02:
+		from = &state->d;
+		break;
+	case 0x03:
+		from = &state->e;
+		break;
+	case 0x04:
+		from = &state->h;
+		break;
+	case 0x05:
+		from = &state->l;
+		break;
+	case 0x06:
+		offset = (uint16_t)((state->h<<8) | (state->l));
+		from = &state->memory[offset];
+		break;
+	case 0x07:
+		from = &state->a;
+		break;
+	}
 
-    *to = *from;
-    return 0; 
+	*to = *from;
+	return 0;
 }
 
-int Or8080(State8080* state){
+int Or8080(State8080* state)
+{
 	uint8_t* opcode = &state->memory[state->pc];
 	uint16_t orParam = 0, offset = 0;
-	switch(*opcode & 0x0F){
-		case 0x00:
-			orParam = (uint16_t)state->b;
-			break;
-		case 0x01:
-			orParam = (uint16_t)state->c;
-			break;
-		case 0x02:
-			orParam = (uint16_t)state->d;
-			break;
-		case 0x03:
-			orParam = (uint16_t)state->e;
-			break;
-		case 0x04:
-			orParam = (uint16_t)state->h;
-			break;
-		case 0x05:
-			orParam = (uint16_t)state->l;
-			break;
-		case 0x06:
-			offset = (uint16_t)((state->h << 8) | (state->l));
-			orParam = &state->memory[offset];
-			break;
-		case 0x07:
-			orParam = (uint16_t)state->a;
-			break;
+	switch(*opcode & 0x0F) {
+	case 0x00:
+		orParam = (uint16_t)state->b;
+		break;
+	case 0x01:
+		orParam = (uint16_t)state->c;
+		break;
+	case 0x02:
+		orParam = (uint16_t)state->d;
+		break;
+	case 0x03:
+		orParam = (uint16_t)state->e;
+		break;
+	case 0x04:
+		orParam = (uint16_t)state->h;
+		break;
+	case 0x05:
+		orParam = (uint16_t)state->l;
+		break;
+	case 0x06:
+		offset = (uint16_t)((state->h << 8) | (state->l));
+		orParam = &state->memory[offset];
+		break;
+	case 0x07:
+		orParam = (uint16_t)state->a;
+		break;
 	}
 	uint16_t answer = (uint16_t)state->a + orParam;
 
@@ -234,7 +236,8 @@ int Or8080(State8080* state){
 	return 0;
 }
 
-int Compare8080(State8080* state){
+int Compare8080(State8080* state)
+{
 
 }
 
@@ -317,7 +320,7 @@ int And8080(State8080* state)
 {
 	uint16_t andParam = 0, offset = 0, answer=0;
 	uint8_t* opcode = &state->memory[state->pc];
-    
+
 	switch((*opcode & 0x0F) % 0x08) {
 	case 0x00:
 		andParam = (uint16_t)state->b;
@@ -344,16 +347,15 @@ int And8080(State8080* state)
 	case 0x07:
 		andParam = (uint16_t)state->a;
 		break;
-    }
-    
-    if(*opcode & 0xF0 < 0x08){
-    //and
-        answer = (uint16_t)state->a & andParam;
-    }
-    else{
-    //XOR
-        answer = (uint16_t)state->a ^ andParam;
-    }
+	}
+
+	if(*opcode & 0xF0 < 0x08) {
+		//and
+		answer = (uint16_t)state->a & andParam;
+	} else {
+		//XOR
+		answer = (uint16_t)state->a ^ andParam;
+	}
 
 	//check zero flag
 	if((answer & 0xff) == 0)
@@ -379,11 +381,9 @@ int Emulate8080p(State8080* state)
 	uint16_t answer, offset;
 	if(*opcode & 0x0F == 0x80) {
 		Add8080(state);
-	}
-    else if(*opcode & 0x0F == 0x90){
-        Sub8080(state);
-    }
-    else {
+	} else if(*opcode & 0x0F == 0x90) {
+		Sub8080(state);
+	} else {
 		switch(*opcode) {
 		case 0x00:
 			break; //nop
