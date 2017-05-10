@@ -416,32 +416,97 @@ int And8080(State8080* state)
 	return 0;
 }
 
+int Inc8080(State8080* state)
+{
+	uint8_t* opcode = &state->memory[state->pc];
+	uint16_t offset = 0;
+	switch((*opcode-4) / 8 ) {
+	case 0x00:
+		state->b+=1;
+		break;
+	case 0x01:
+		state->c+=1;
+		break;
+	case 0x02:
+		state->d+=1;
+		break;
+	case 0x03:
+		state->e+=1;
+		break;
+	case 0x04:
+		state->h+=1;
+		break;
+	case 0x05:
+		state->l+=1;
+		break;
+	case 0x06:
+		offset = (uint16_t)(state->h << 8) | (uint16_t)(state->l);
+		state->memory[offset] += 1;
+		break;
+	case 0x07:
+		state->a+=1;
+		break;
+	}
+}
 
+int Dec8080(State8080* state)
+{
+	uint8_t* opcode = &state->memory[state->pc];
+	uint16_t offset = 0;
+	switch((*opcode-5) / 8 ) {
+	case 0x00:
+		state->b-=1;
+		break;
+	case 0x01:
+		state->c-=1;
+		break;
+	case 0x02:
+		state->d-=1;
+		break;
+	case 0x03:
+		state->e-=1;
+		break;
+	case 0x04:
+		state->h-=1;
+		break;
+	case 0x05:
+		state->l-=1;
+		break;
+	case 0x06:
+		offset = (uint16_t)(state->h << 8) | (uint16_t)(state->l);
+		state->memory[offset] -= 1;
+		break;
+	case 0x07:
+		state->a-=1;
+		break;
+	}
+}
 
 int Emulate8080p(State8080* state)
 {
 	uint8_t* opcode = &state->memory[state->pc];
 	uint16_t answer, offset;
 	uint8_t fOpcode = *opcode & 0x0F;
-    uint8_t sOpcode = *opcode & 0xF0;
-    if(fOpcode > 0x30 && fOpcode < 0x80){
-        Move8080(state);
-    }
-    else if(fOpcode == 0x80) {
+	uint8_t sOpcode = *opcode & 0xF0;
+	if(fOpcode > 0x30 && fOpcode < 0x80) {
+		Move8080(state);
+	} else if(fOpcode == 0x80) {
 		Add8080(state);
 	} else if(fOpcode == 0x90) {
 		Sub8080(state);
-	} else if(fOpcode == 0xA0){
-        And8080(state);
-    } else if(fOpcode == 0xB0){
-        if(sOpcode < 0x08){
-            Or8080(state);
-        }
-        else{
-            Compare8080(state);
-        }
-    }
-    else{
+	} else if(fOpcode == 0xA0) {
+		And8080(state);
+	} else if(fOpcode == 0xB0) {
+		if(sOpcode < 0x08) {
+			Or8080(state);
+		} else {
+			Compare8080(state);
+		}
+	} else if((*opcode-4) % 8 == 0) {
+		Inc8080(state);
+	} else if((*opcode-5) % 8 == 0) {
+		Dec8080(state);
+	} else {
 		switch(*opcode) {
 		case 0x00:
 			break; //nop
