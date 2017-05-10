@@ -419,34 +419,48 @@ int And8080(State8080* state)
 int Inc8080(State8080* state)
 {
 	uint8_t* opcode = &state->memory[state->pc];
-	uint16_t offset = 0;
+	uint16_t offset = 0, answer = 0;
 	switch((*opcode-4) / 8 ) {
 	case 0x00:
-		state->b+=1;
+		answer = state->b + 1;
+		state->b = answer & 0xff;
 		break;
 	case 0x01:
-		state->c+=1;
+		answer = state->c + 1;
+		state->c = answer & 0xff;	
 		break;
 	case 0x02:
-		state->d+=1;
+		answer = state->d + 1;
+		state->d = answer & 0xff;
 		break;
 	case 0x03:
-		state->e+=1;
+		answer = state->e + 1;
+		state->e = answer & 0xff;
 		break;
 	case 0x04:
-		state->h+=1;
+		answer = state->h + 1;
+		state->h = answer & 0xff;
 		break;
 	case 0x05:
-		state->l+=1;
+		answer = state->l + 1;
+		state->l = answer & 0xff;
 		break;
 	case 0x06:
 		offset = (uint16_t)(state->h << 8) | (uint16_t)(state->l);
-		state->memory[offset] += 1;
+		answer = state->memory[offset] + 1;
+		state->memory[offset] = answer & 0xff;
 		break;
 	case 0x07:
-		state->a+=1;
+		answer = state->a + 1;
+		state->a = answer & 0xff;
 		break;
 	}
+	state->cc.z = ((answer & 0xff) == 0);
+	state->cc.s = ((answer & 0x80) != 0);
+	state->cc.cy = (answer > 0xff);
+	state->cc.p = parity(answer&0xff, 8);
+
+	return 0;
 }
 
 int Dec8080(State8080* state)
@@ -455,31 +469,45 @@ int Dec8080(State8080* state)
 	uint16_t offset = 0;
 	switch((*opcode-5) / 8 ) {
 	case 0x00:
-		state->b-=1;
+		answer = state->b - 1;
+		state->b = answer & 0xff;
 		break;
 	case 0x01:
-		state->c-=1;
+		answer = state->c - 1;
+		state->c = answer & 0xff;	
 		break;
 	case 0x02:
-		state->d-=1;
+		answer = state->d - 1;
+		state->d = answer & 0xff;
 		break;
 	case 0x03:
-		state->e-=1;
+		answer = state->e - 1;
+		state->e = answer & 0xff;
 		break;
 	case 0x04:
-		state->h-=1;
+		answer = state->h - 1;
+		state->h = answer & 0xff;
 		break;
 	case 0x05:
-		state->l-=1;
+		answer = state->l - 1;
+		state->l = answer & 0xff;
 		break;
 	case 0x06:
 		offset = (uint16_t)(state->h << 8) | (uint16_t)(state->l);
-		state->memory[offset] -= 1;
+		answer = state->memory[offset] - 1;
+		state->memory[offset] = answer & 0xff;
 		break;
 	case 0x07:
-		state->a-=1;
+		answer = state->a - 1;
+		state->a = answer & 0xff;
 		break;
 	}
+	state->cc.z = ((answer & 0xff) == 0);
+	state->cc.s = ((answer & 0x80) != 0);
+	state->cc.cy = (answer > 0xff);
+	state->cc.p = parity(answer&0xff, 8);
+
+	return 0;
 }
 
 int Emulate8080p(State8080* state)
