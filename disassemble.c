@@ -427,7 +427,7 @@ int Inc8080(State8080* state)
 		break;
 	case 0x01:
 		answer = state->c + 1;
-		state->c = answer & 0xff;	
+		state->c = answer & 0xff;
 		break;
 	case 0x02:
 		answer = state->d + 1;
@@ -474,7 +474,7 @@ int Dec8080(State8080* state)
 		break;
 	case 0x01:
 		answer = state->c - 1;
-		state->c = answer & 0xff;	
+		state->c = answer & 0xff;
 		break;
 	case 0x02:
 		answer = state->d - 1;
